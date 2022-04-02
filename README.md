@@ -3,7 +3,7 @@
 `hpxbuilder` is a package used for building [hpxqt](https://github.com/chainprox/hpxqt)
 & [hpxclient](https://github.com/chainprox/hpxclient) binaries for your platform specific architecture.
 
-It uses `py2app` and `PyInstaller` to compile from source code.
+It `PyInstaller` to compile from source code.
 
 
 ## What do I need?

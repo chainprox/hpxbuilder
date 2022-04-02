@@ -1,19 +1,41 @@
 import os
-from sys import platform as _platform
+from sys import platform
+import tarfile
 
 from PyQt5.pyrcc_main import processResourceFile
 
+import PyInstaller.config
+from PyInstaller.__main__ import run
+
+
 from hpxbuilder import utils as hpxbuilder_utils
+from hpxbuilder import utils
 
 
-def build_p2app():
-    from mac import build
-    build.process()
+def compress_app():
+    compressed_name = utils.get_compressed_name()
+    compressed_fpath = os.path.join(utils.get_dist_dir(),
+                                    '%s.tar.gz' % compressed_name)
+
+    with tarfile.open(compressed_fpath, 'w:gz') as tar:
+        src_path = os.path.join(utils.get_dist_dir(), utils.get_exec_name())
+        arcname = os.path.join(compressed_name, 'bin',  utils.get_exec_name())
+        tar.add(src_path, arcname)
 
 
-def build_pyinstaller():
-    from win import build
-    build.process()
+def process_build():
+    platform_name = platform.lower()
+
+    PyInstaller.config.CONF['workpath'] = utils.get_dist_dir()
+
+    platform_spec_file =os.path.join(utils.get_builder_base(), "specs", "%s_build.spec" %platform_name)
+    if not os.path.exists(platform_spec_file):
+        platform_spec_file = os.path.join(utils.get_builder_base(), "specs", "build.spec")
+
+    run([platform_spec_file])
+
+    if platform.lower() == "linux":
+        compress_app()
 
 
 def compile_imgs():
@@ -27,7 +49,4 @@ def compile_imgs():
 
 if __name__ == "__main__":
     compile_imgs()
-    if _platform == "darwin":
-        build_p2app()
-    else:
-        build_pyinstaller()
+    process_build()
