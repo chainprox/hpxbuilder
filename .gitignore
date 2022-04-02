@@ -1,0 +1,7 @@
+dist
+build
+temp
+__pycache__
+.DS_Store
+.idea
+.eggs
